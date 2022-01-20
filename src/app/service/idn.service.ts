@@ -26,6 +26,9 @@ export class IDNService {
   //Keep track of source aggregation task ID and its polling (calling IDN API to fetch Task completed status) status. 
   aggTaskPollingStatusMap = {};
 
+  //Global flag to indicate document generation is in processing
+  processingDocGeneration = false;
+
   constructor(
         private http: HttpClient,
         private messageService: MessageService,
