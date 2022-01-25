@@ -4,31 +4,35 @@
     <li class="breadcrumb-item active" aria-current="page">Generate Documents</li>
   </ol>
 </nav>
+<!--
 <div class="form-group row" *ngIf="isProcessingDocGeneration()">
   <div class="col-sm-12 text-right">
     <span class="spinner-border spinner-border-sm mr-1"></span>Loading...
   </div>
 </div>
+-->
 <div class="form-group row">
   <div class="col-sm-12 text-left">
     <span class="font-weight-bold">- Select checkbox on table header to generate and download all documents</span>
     <br/><span class="font-weight-bold">- Select individual checkbox on each row to generate and download one or multiple documents</span>
   </div>
 </div>
-<!--
+
 <div class="form-group row">
   <div class="col-sm-12 text-left">
     <button type="button" [disabled]="isProcessingDocGeneration()" (click)="submitGenDocTask()" class="btn btn-info btn-sm">
-      Generate Document
+      Generate
     </button>
   </div>
 </div>
+<!--
 <div class="form-group row" *ngIf="isProcessingDocGeneration()">
   <div class="col-sm-12 text-left">
     <span class="spinner-border spinner-border-sm mr-1"></span>Generating Document...
   </div>
 </div>
 -->
+
 <table class="table table-striped table-bordered">
   <thead class="thead-light">
     <tr>
@@ -47,7 +51,13 @@
       </td>
       <td>Sources</td>
       <td>Description</td>
-      <td>Gathering data...</td>
+      <td>
+        <div class="form-group row" *ngIf="isProcessingDocGeneration()">
+          <div class="col-sm-12 text-left">
+            <span class="spinner-border spinner-border-sm mr-1"></span>Generating...
+          </div>
+        </div>
+      </td>
     </tr>
     <tr>
       <td>

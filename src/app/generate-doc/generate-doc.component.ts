@@ -167,7 +167,7 @@ export class GenerateDocComponent implements OnInit {
     //TODO... other sections should be added here
 
     //Simulation: taking long time to generate document
-    await this.sleep(30*1000);
+    //await this.sleep(100);
 
     const doc = new Document({
       sections: [{
