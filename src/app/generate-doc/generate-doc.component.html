@@ -37,20 +37,23 @@
   <thead class="thead-light">
     <tr>
       <th scope="col">
-          <input type="checkbox" id="selectAll">
+        Select All
+        <br>
+          <input type="checkbox" [(ngModel)]="selectAll" (click)="changeOnSelectAll()" id="selectAll">
       </th>
       <th scope="col">Name</th>
       <th scope="col">Description</th>
       <th scope="col">Status</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
+  <tbody *ngIf="documentItems">
+    <tr *ngFor="let di of documentItems">
       <td>
-        <input type="checkbox">
+        <input type="checkbox" [(ngModel)]="di.selected" (click)="changeOnSelect($event, documentItems.indexOf(di))">
       </td>
-      <td>Sources</td>
-      <td>Description</td>
+      <td>{{ di.name }}</td>
+      <td>{{ di.description }}</td>
+      <!--
       <td>
         <div class="form-group row" *ngIf="isProcessingDocGeneration()">
           <div class="col-sm-12 text-left">
@@ -58,22 +61,14 @@
           </div>
         </div>
       </td>
-    </tr>
-    <tr>
+      -->
       <td>
-        <input type="checkbox">
+        <div class="form-group row" *ngIf="di.selected">
+          <div class="col-sm-12 text-left">
+            <span class="spinner-border spinner-border-sm mr-1"></span>Generating...
+          </div>
+        </div>
       </td>
-      <td>Rules</td>
-      <td>Description</td>
-      <td>Gathering data...</td>
-    </tr>
-    <tr>
-      <td>
-        <input type="checkbox">
-      </td>
-      <td>Transforms</td>
-      <td>Description</td>
-      <td>Gathering data...</td>
     </tr>
   </tbody>
 </table>

@@ -11,6 +11,7 @@ import {
   TextRun,  Table, TableCell, TableRow, BorderStyle
 } from "docx";
 import { Source } from '../model/source';
+import { DocumentItem } from '../model/document-item';
 import { SimpleQueryCondition } from '../model/simple-query-condition';
 import { SourceOwner } from '../model/source-owner';
 import { IDNService } from '../service/idn.service';
@@ -25,6 +26,8 @@ import { AuthenticationService } from '../service/authentication-service.service
 
 export class GenerateDocComponent implements OnInit {
   content: any[];
+  selectAll: boolean;
+  documentItems: DocumentItem[];
 
   constructor(
     private idnService: IDNService, 
@@ -38,9 +41,82 @@ export class GenerateDocComponent implements OnInit {
 
   reset(clearMsg: boolean) {
     this.content = [];
+    this.documentItems = [];
+
+    let orgConfigDoco = new DocumentItem();
+    orgConfigDoco.name = "Org Config";
+    orgConfigDoco.description = "TBD";
+    orgConfigDoco.status = "";
+    this.documentItems.push(orgConfigDoco);
+
+    let identityProfilesDoco = new DocumentItem();
+    identityProfilesDoco.name = "Identity Profiles";
+    identityProfilesDoco.description = "TBD";
+    identityProfilesDoco.status = "";
+    this.documentItems.push(identityProfilesDoco);
+
+    let sourcesDoco = new DocumentItem();
+    sourcesDoco.name = "Sources";
+    sourcesDoco.description = "TBD";
+    sourcesDoco.status = "";
+    this.documentItems.push(sourcesDoco);
+
+    let rulesDoco = new DocumentItem();
+    rulesDoco.name = "Rules";
+    rulesDoco.description = "TBD";
+    rulesDoco.status = "";
+    this.documentItems.push(rulesDoco);
+
+    let transformsDoco = new DocumentItem();
+    transformsDoco.name = "Transforms";
+    transformsDoco.description = "TBD";
+    transformsDoco.status = "";
+    this.documentItems.push(transformsDoco);
+
     if (clearMsg) {
       this.messageService.clearAll();
     } 
+  }
+
+  changeOnSelectAll() {
+    this.messageService.clearError();
+    
+    this.documentItems.forEach(each => {
+      console.log("this.selectAll: " + !this.selectAll);
+      each.selected = !this.selectAll;
+      /*
+      if (each.selected) {
+        if (each.newOwner == null) {
+          each.newOwner = new SourceOwner();
+        }
+        each.newOwner.accountName = each.owner.accountName;
+      } else {
+        if (each.newOwner) {
+          each.newOwner.accountName = null;
+        }
+      }
+      */
+    });
+  }
+
+  changeOnSelect($event, index: number) {
+    this.messageService.clearError();
+    console.log("$event: " + $event);
+    console.log("index: " + index);
+    console.log("name: " + this.documentItems[index].name);
+    /*
+    if (!$event.currentTarget.checked) {
+      this.selectAll = false;
+      if (this.documentItems[index].newOwner) {
+        this.documentItems[index].newOwner.accountName = null;
+      }
+    } else {
+      if (this.documentItems[index].newOwner == null) {
+        this.documentItems[index].newOwner = new SourceOwner();
+      }
+      this.documentItems[index].newOwner.accountName = this.soudocumentItemsrces[index].owner.accountName;
+    }
+    */
   }
 
   createHeaderTableCell(text: string) :TableCell {
