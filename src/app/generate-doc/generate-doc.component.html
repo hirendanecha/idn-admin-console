@@ -52,7 +52,10 @@
   </thead>
   <tbody *ngIf="documentItems">
     <tr *ngFor="let di of documentItems">
-      <td>
+      <td *ngIf="di.name == 'All'">
+        <input type="checkbox" [disabled]="di.disabled" [(ngModel)]="di.selected" (click)="changeOnSelectAll($event)">
+      </td>
+      <td *ngIf="di.name != 'All'">
         <input type="checkbox" [disabled]="di.disabled" [(ngModel)]="di.selected" (click)="changeOnSelect($event, documentItems.indexOf(di))">
       </td>
       <td>{{ di.name }}</td>

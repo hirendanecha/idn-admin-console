@@ -91,14 +91,15 @@ export class GenerateDocComponent implements OnInit {
       this.messageService.clearAll();
     } 
   }
-
+  
+  /*
   changeOnSelectAll() {
     this.messageService.clearError();
     
     this.documentItems.forEach(each => {
       console.log("this.selectAll: " + !this.selectAll);
       each.selected = !this.selectAll;
-      /*
+      
       if (each.selected) {
         if (each.newOwner == null) {
           each.newOwner = new SourceOwner();
@@ -109,10 +110,31 @@ export class GenerateDocComponent implements OnInit {
           each.newOwner.accountName = null;
         }
       }
-      */
+      
     });
   }
+  */
 
+  changeOnSelectAll($event) {
+    if ($event.target.checked == true) {
+      for (let item of this.documentItems) {
+        if (item.name != "All") {
+          item.disabled = true;
+          item.selected = false;
+        }
+      }
+      this.idnService.processingDocGeneration = true;
+      this.submitGenDocTask();
+    }
+    else {
+      for (let item of this.documentItems) {
+        if (item.name != "All") {
+          item.disabled = false;
+        }
+      }
+    }
+  }
+  
   changeOnSelect($event, index: number) {
     this.messageService.clearError();
     console.log("$event: " + $event);
@@ -120,16 +142,30 @@ export class GenerateDocComponent implements OnInit {
     console.log("index: " + index);
     console.log("name: " + this.documentItems[index].name);
 
-    if (this.documentItems[index].name == "All") {
-      if ($event.target.checked == true) {
-        console.log("selected: " + this.documentItems[index].selected);
-        for (let item of this.documentItems) {
-          if (item.name != "All") {
-            item.disabled = true;
-            item.selected = false;
-          }
+    
+    if ($event.target.checked == true) {
+      console.log("selected: " + this.documentItems[index].selected);
+      for (let item of this.documentItems) {
+        if (item.name == "All") {
+          item.disabled = true;
+          item.selected = false;
+          break;
         }
       }
+      this.idnService.processingDocGeneration = true;
+      this.submitGenDocTask();
+    }
+    else {
+      for (let item of this.documentItems) {
+        if (item.name == "All") {
+          item.disabled = false;
+          item.selected = false;
+          break;
+        }
+      }
+    }
+
+    /*
       else {
         for (let item of this.documentItems) {
           if (item.name != "All") {
@@ -137,23 +173,12 @@ export class GenerateDocComponent implements OnInit {
           }
         }
       }
-    }
-    else {
-      // disable All checkbox
-      if ($event.target.checked == true) {
-        for (let item of this.documentItems) {
-          if (item.name == "All") {
-            item.disabled = true;
-            item.selected = false;
-          }
-        }
-      }
-    }
 
     // temp code for GUI
-    this.idnService.processingDocGeneration = true;
-    this.submitGenDocTask();
     
+    */
+
+
     /*
     if (!$event.currentTarget.checked) {
       this.selectAll = false;
