@@ -17,6 +17,7 @@ import { SourceOwner } from '../model/source-owner';
 import { IDNService } from '../service/idn.service';
 import { MessageService } from '../service/message.service';
 import { AuthenticationService } from '../service/authentication-service.service';
+import { ItemsList } from '@ng-select/ng-select/lib/items-list';
 
 @Component({
   selector: 'app-generate-doc',
@@ -43,34 +44,47 @@ export class GenerateDocComponent implements OnInit {
     this.content = [];
     this.documentItems = [];
 
+    let allDoco = new DocumentItem();
+    allDoco.name = "All";
+    allDoco.description = "For all documents";
+    allDoco.status = "";
+    allDoco.disabled = false;
+    allDoco.selected = false;
+    this.documentItems.push(allDoco);
+
     let orgConfigDoco = new DocumentItem();
     orgConfigDoco.name = "Org Config";
-    orgConfigDoco.description = "TBD";
+    orgConfigDoco.description = "Only for org configuration";
     orgConfigDoco.status = "";
+    orgConfigDoco.disabled = false;
     this.documentItems.push(orgConfigDoco);
 
     let identityProfilesDoco = new DocumentItem();
     identityProfilesDoco.name = "Identity Profiles";
-    identityProfilesDoco.description = "TBD";
+    identityProfilesDoco.description = "Only for identy profiles";
     identityProfilesDoco.status = "";
+    identityProfilesDoco.disabled = false;
     this.documentItems.push(identityProfilesDoco);
 
     let sourcesDoco = new DocumentItem();
     sourcesDoco.name = "Sources";
-    sourcesDoco.description = "TBD";
+    sourcesDoco.description = "Only for sources";
     sourcesDoco.status = "";
+    sourcesDoco.disabled = false;
     this.documentItems.push(sourcesDoco);
 
     let rulesDoco = new DocumentItem();
     rulesDoco.name = "Rules";
-    rulesDoco.description = "TBD";
+    rulesDoco.description = "Only for rules";
     rulesDoco.status = "";
+    rulesDoco.disabled = false;
     this.documentItems.push(rulesDoco);
 
     let transformsDoco = new DocumentItem();
     transformsDoco.name = "Transforms";
-    transformsDoco.description = "TBD";
+    transformsDoco.description = "Only for transforms";
     transformsDoco.status = "";
+    transformsDoco.disabled = false;
     this.documentItems.push(transformsDoco);
 
     if (clearMsg) {
@@ -102,8 +116,44 @@ export class GenerateDocComponent implements OnInit {
   changeOnSelect($event, index: number) {
     this.messageService.clearError();
     console.log("$event: " + $event);
+    console.log("$event.target.checked: " + $event.target.checked);
     console.log("index: " + index);
     console.log("name: " + this.documentItems[index].name);
+
+    if (this.documentItems[index].name == "All") {
+      if ($event.target.checked == true) {
+        console.log("selected: " + this.documentItems[index].selected);
+        for (let item of this.documentItems) {
+          if (item.name != "All") {
+            item.disabled = true;
+            item.selected = false;
+          }
+        }
+      }
+      else {
+        for (let item of this.documentItems) {
+          if (item.name != "All") {
+            item.disabled = false;
+          }
+        }
+      }
+    }
+    else {
+      // disable All checkbox
+      if ($event.target.checked == true) {
+        for (let item of this.documentItems) {
+          if (item.name == "All") {
+            item.disabled = true;
+            item.selected = false;
+          }
+        }
+      }
+    }
+
+    // temp code for GUI
+    this.idnService.processingDocGeneration = true;
+    this.submitGenDocTask();
+    
     /*
     if (!$event.currentTarget.checked) {
       this.selectAll = false;
@@ -118,6 +168,8 @@ export class GenerateDocComponent implements OnInit {
     }
     */
   }
+
+
 
   createHeaderTableCell(text: string) :TableCell {
     return new TableCell({
@@ -268,7 +320,7 @@ export class GenerateDocComponent implements OnInit {
   }
 
   async submitGenDocTask() {
-    this.generateDoc();
+    //this.generateDoc();
 
     while (true) {
       if (this.isProcessingDocGeneration() ) {
@@ -277,7 +329,8 @@ export class GenerateDocComponent implements OnInit {
         console.log("Document is generated.");
         break;
       }
-      await this.sleep(5*1000);
+      await this.sleep(2*1000);
+      this.idnService.processingDocGeneration = false;
     }
   }
 
@@ -289,4 +342,9 @@ export class GenerateDocComponent implements OnInit {
     return this.idnService.processingDocGeneration;
   }
 
+  downloadDocument() {
+    return "hello";
+  }
+
 }
+

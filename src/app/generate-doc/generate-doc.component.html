@@ -13,11 +13,11 @@
 -->
 <div class="form-group row">
   <div class="col-sm-12 text-left">
-    <span class="font-weight-bold">- Select "Select All" checkbox and click "Generate" button to generate all documents</span>
-    <br/><span class="font-weight-bold">- Select individual checkbox on each row and click "Generate" button to generate one or multiple documents</span>
+    <span class="font-weight-bold">Select "All" checkbox to generate a full document or select individual checkbox to generate specific document</span>
   </div>
 </div>
 
+<!--
 <div class="form-group row">
   <div class="col-sm-12 text-left">
     <button type="button" [disabled]="isProcessingDocGeneration()" (click)="submitGenDocTask()" class="btn btn-info btn-sm">
@@ -25,6 +25,7 @@
     </button>
   </div>
 </div>
+-->
 <!--
 <div class="form-group row" *ngIf="isProcessingDocGeneration()">
   <div class="col-sm-12 text-left">
@@ -36,20 +37,23 @@
 <table class="table table-striped table-bordered">
   <thead class="thead-light">
     <tr>
+      <!--
       <th scope="col">
         Select All
         <br>
           <input type="checkbox" [(ngModel)]="selectAll" (click)="changeOnSelectAll()" id="selectAll">
       </th>
-      <th scope="col">Name</th>
+      -->
+      <th scope="col">&nbsp;</th>
+      <th scope="col">Type</th>
       <th scope="col">Description</th>
-      <th scope="col">Status</th>
+      <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody *ngIf="documentItems">
     <tr *ngFor="let di of documentItems">
       <td>
-        <input type="checkbox" [(ngModel)]="di.selected" (click)="changeOnSelect($event, documentItems.indexOf(di))">
+        <input type="checkbox" [disabled]="di.disabled" [(ngModel)]="di.selected" (click)="changeOnSelect($event, documentItems.indexOf(di))">
       </td>
       <td>{{ di.name }}</td>
       <td>{{ di.description }}</td>
@@ -63,9 +67,16 @@
       </td>
       -->
       <td>
-        <div class="form-group row" *ngIf="di.selected">
+        <div class="form-group row" *ngIf="di.selected && isProcessingDocGeneration()">
           <div class="col-sm-12 text-left">
             <span class="spinner-border spinner-border-sm mr-1"></span>Generating...
+          </div>
+        </div>
+        <div class="form-group row" *ngIf="di.selected && !isProcessingDocGeneration()">
+          <div class="col-sm-12 text-left">
+            <button type="button" (click)="downloadDocument()" class="btn btn-info btn-sm">
+              Download
+            </button>
           </div>
         </div>
       </td>

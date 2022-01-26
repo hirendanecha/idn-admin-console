@@ -5,4 +5,5 @@ export class DocumentItem {
   description: string;
   status: string;
   selected: boolean;
+  disabled: boolean;
 }

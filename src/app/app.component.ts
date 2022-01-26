@@ -22,6 +22,7 @@ export class AppComponent {
 
   idleState = 'Not started.';
   lastPing?: Date = null;
+  currentYear: number = new Date().getFullYear();
 
   public modalRef: BsModalRef;
 
