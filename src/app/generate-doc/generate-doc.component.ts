@@ -353,7 +353,7 @@ export class GenerateDocComponent implements OnInit {
   }
 
   async submitGenDocTask() {
-    //this.generateDoc();
+    this.generateDoc();
     this.idnService.processingDocGeneration = true;
 
     while (true) {
@@ -373,8 +373,9 @@ export class GenerateDocComponent implements OnInit {
         }
         break;
       }
-      await this.sleep(3*1000);
-      this.idnService.processingDocGeneration = false;
+      await this.sleep(2*1000);
+      this.messageService.clearAll();
+      //this.idnService.processingDocGeneration = false;
     }
   }
 
