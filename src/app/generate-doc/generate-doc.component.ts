@@ -29,6 +29,7 @@ export class GenerateDocComponent implements OnInit {
   content: any[];
   selectAll: boolean;
   documentItems: DocumentItem[];
+  readyForGenerate = false;
 
   constructor(
     private idnService: IDNService, 
@@ -43,11 +44,11 @@ export class GenerateDocComponent implements OnInit {
   reset(clearMsg: boolean) {
     this.content = [];
     this.documentItems = [];
+    this. readyForGenerate = false;
 
     let allDoco = new DocumentItem();
     allDoco.name = "All";
     allDoco.description = "For all documents";
-    allDoco.status = "";
     allDoco.disabled = false;
     allDoco.selected = false;
     this.documentItems.push(allDoco);
@@ -55,36 +56,36 @@ export class GenerateDocComponent implements OnInit {
     let orgConfigDoco = new DocumentItem();
     orgConfigDoco.name = "Org Config";
     orgConfigDoco.description = "Only for org configuration";
-    orgConfigDoco.status = "";
     orgConfigDoco.disabled = false;
+    orgConfigDoco.selected = false;
     this.documentItems.push(orgConfigDoco);
 
     let identityProfilesDoco = new DocumentItem();
     identityProfilesDoco.name = "Identity Profiles";
     identityProfilesDoco.description = "Only for identy profiles";
-    identityProfilesDoco.status = "";
     identityProfilesDoco.disabled = false;
+    identityProfilesDoco.selected = false;
     this.documentItems.push(identityProfilesDoco);
 
     let sourcesDoco = new DocumentItem();
     sourcesDoco.name = "Sources";
     sourcesDoco.description = "Only for sources";
-    sourcesDoco.status = "";
     sourcesDoco.disabled = false;
+    sourcesDoco.selected = false;
     this.documentItems.push(sourcesDoco);
 
     let rulesDoco = new DocumentItem();
     rulesDoco.name = "Rules";
     rulesDoco.description = "Only for rules";
-    rulesDoco.status = "";
     rulesDoco.disabled = false;
+    rulesDoco.selected = false;
     this.documentItems.push(rulesDoco);
 
     let transformsDoco = new DocumentItem();
     transformsDoco.name = "Transforms";
     transformsDoco.description = "Only for transforms";
-    transformsDoco.status = "";
     transformsDoco.disabled = false;
+    transformsDoco.selected = false;
     this.documentItems.push(transformsDoco);
 
     if (clearMsg) {
@@ -116,6 +117,7 @@ export class GenerateDocComponent implements OnInit {
   */
 
   changeOnSelectAll($event) {
+    this.messageService.clearError();
     if ($event.target.checked == true) {
       for (let item of this.documentItems) {
         if (item.name != "All") {
@@ -123,8 +125,7 @@ export class GenerateDocComponent implements OnInit {
           item.selected = false;
         }
       }
-      this.idnService.processingDocGeneration = true;
-      this.submitGenDocTask();
+      this.readyForGenerate = true;
     }
     else {
       for (let item of this.documentItems) {
@@ -132,39 +133,46 @@ export class GenerateDocComponent implements OnInit {
           item.disabled = false;
         }
       }
+      this.readyForGenerate = false;
     }
   }
   
   changeOnSelect($event, index: number) {
     this.messageService.clearError();
-    console.log("$event: " + $event);
-    console.log("$event.target.checked: " + $event.target.checked);
-    console.log("index: " + index);
-    console.log("name: " + this.documentItems[index].name);
 
-    
     if ($event.target.checked == true) {
-      console.log("selected: " + this.documentItems[index].selected);
-      for (let item of this.documentItems) {
-        if (item.name == "All") {
-          item.disabled = true;
-          item.selected = false;
-          break;
-        }
-      }
-      this.idnService.processingDocGeneration = true;
-      this.submitGenDocTask();
+      this.documentItems[0].selected = false;
+      this.documentItems[0].disabled = true;
+
+      this.readyForGenerate = true;
     }
     else {
+      this.documentItems[index].selected = false;
+      let unSelectedCount = 0;
       for (let item of this.documentItems) {
-        if (item.name == "All") {
-          item.disabled = false;
-          item.selected = false;
-          break;
+        console.log("name: " + item.name + " selected: " + item.selected);
+        if (item.name != "All" && !item.selected) {
+          unSelectedCount++;
         }
+      }
+      console.log("unSelectedCount: " + unSelectedCount);
+      if (unSelectedCount == this.documentItems.length - 1) {
+        this.documentItems[0].disabled = false;
+        this.readyForGenerate = false;
+      }
+    }
+    /*
+    let unSelectedCount = 0;
+    for (let item of this.documentItems) {
+      if (item.name != "All" && !item.selected) {
+        unSelectedCount++;
       }
     }
 
+    if (unSelectedCount == this.documentItems.length - 1) {
+      this.documentItems[0].disabled = false;
+    }
+    */
     /*
       else {
         for (let item of this.documentItems) {
@@ -346,15 +354,26 @@ export class GenerateDocComponent implements OnInit {
 
   async submitGenDocTask() {
     //this.generateDoc();
+    this.idnService.processingDocGeneration = true;
 
     while (true) {
       if (this.isProcessingDocGeneration() ) {
         console.log("Document generation is in progress.");
+
+        this.readyForGenerate = false;
+        for (let item of this.documentItems) {
+            item.disabled = true;
+        }
+
       } else {
         console.log("Document is generated.");
+        for (let item of this.documentItems) {
+          item.disabled = false;
+          item.selected = false;
+        }
         break;
       }
-      await this.sleep(2*1000);
+      await this.sleep(3*1000);
       this.idnService.processingDocGeneration = false;
     }
   }
