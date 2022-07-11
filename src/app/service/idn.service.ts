@@ -25,6 +25,9 @@ export class IDNService {
 
   codec = new HttpUrlEncodingCodec;
 
+    //Global flag to indicate document generation is in processing
+    processingDocGeneration = false;
+
   //Keep track of source aggregation task ID and its polling (calling IDN API to fetch Task completed status) status. 
   aggTaskPollingStatusMap = {};
 

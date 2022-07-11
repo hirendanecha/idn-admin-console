@@ -14,6 +14,7 @@ import { RoleManagementComponent} from './role-management/role-management.compon
 import { AccessProfileManagementComponent} from './accessprofile-management/accessprofile-management.component';
 import { ReleaseHistoryComponent} from './release-history/release-history.component';
 import { CreditsComponent} from './credits/credits.component';
+import { OrgConfigExportComponent } from './org-config-export/org-config-export.component';
 import { OrgTimeComponent} from './org-time-update/org-time-update.component';
 import { LoginComponent }   from './login/login.component';
 import { AuthGuard } from './helper/auth.guard';
@@ -33,6 +34,7 @@ const routes: Routes = [
   { path: 'accessprofile-management', component: AccessProfileManagementComponent, canActivate: [AuthGuard] },
   { path: 'release-history', component: ReleaseHistoryComponent, canActivate: [AuthGuard] },
   { path: 'credits', component: CreditsComponent, canActivate: [AuthGuard] },
+  { path: 'org-config-export', component: OrgConfigExportComponent, canActivate: [AuthGuard] },
   { path: 'org-time-update', component: OrgTimeComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent }
 ];

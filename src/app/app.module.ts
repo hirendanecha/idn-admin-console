@@ -21,6 +21,7 @@ import { RoleManagementComponent} from './role-management/role-management.compon
 import { AccessProfileManagementComponent} from './accessprofile-management/accessprofile-management.component';
 import { ReleaseHistoryComponent } from './release-history/release-history.component';
 import { CreditsComponent } from './credits/credits.component';
+import { OrgConfigExportComponent } from './org-config-export/org-config-export.component';
 import { OrgTimeComponent } from './org-time-update/org-time-update.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MessagesComponent } from './messages/messages.component';
@@ -48,6 +49,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AccessProfileManagementComponent,
     ReleaseHistoryComponent,
     CreditsComponent,
+    OrgConfigExportComponent,
     OrgTimeComponent,
     MessagesComponent,
     LoginComponent,
