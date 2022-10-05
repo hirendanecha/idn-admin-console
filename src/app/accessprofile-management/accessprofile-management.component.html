@@ -15,7 +15,7 @@
         placeholder="Type Access Profile Name, Description, Owner Account ID or Owner Display Name to filter the result.">
     </div>
     <div class="col-sm-2 text-right">
-      <button type="button" [disabled]="loading" (click)="ngOnInit()" class="btn btn-info btn-sm">
+      <button type="button" [disabled]="loading" (click)="ngOnInit()" class="btn btn-primary btn-sm">
         Refresh
       </button>
     </div>
@@ -27,7 +27,7 @@
   </div>
 </div>
 <div class="form-group row" *ngIf="!loading && allOwnersFetched">
-  <div class="col-sm-5">
+  <div class="col-sm-8">
     <ng-select [(ngModel)]="bulkAction" appearance="outline" placeholder="Select Bulk Access Profile Action" 
       (change)="changeOnBulkAction($event)">
         <ng-option value="EnableAccessProfiles">Bulk Enable Access Profile</ng-option>
@@ -35,9 +35,14 @@
         <ng-option value="DeleteAccessProfiles">Bulk Delete Access Profile</ng-option>
     </ng-select>
   </div>
-  <div class="col-sm-7 text-right" *ngIf="accessProfiles">
-    <button type="button" (click)="saveInCsv()" class="btn btn-link">
-      Download
+  <div class="col-sm-2 text-right" *ngIf="accessProfiles">
+    <button type="button" [disabled]="loading" (click)="saveInCsv()" class="btn btn-primary btn-sm">
+      Download CSV
+    </button>
+  </div>
+  <div class="col-sm-2 text-right">
+    <button type="button" [disabled]="loading" (click)="exportAllAccessProfiles()" class="btn btn-primary btn-sm">
+      Export All
     </button>
   </div>
 </div>
@@ -46,7 +51,7 @@
     <span class="font-weight-bold">To enable Access Profiles, select the items and click the 'Submit to Enable' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Enable
     </button>
   </div>
@@ -56,7 +61,7 @@
     <span class="font-weight-bold">To disable Access Profiles, select the items and click the 'Submit to Disable' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Disable
     </button>
   </div>
@@ -66,7 +71,7 @@
     <span class="font-weight-bold">To delete Access Profiles, select the items and click the 'Submit to Delete Access Profiles' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Delete Access Profiles
     </button>
   </div>
@@ -88,12 +93,12 @@
     </tr>
   </thead>
   <tbody *ngIf="accessProfilesToShow">
-    <tr *ngFor="let ap of accessProfilesToShow | filter:searchText:['name', 'description', 'currentOwnerAccountName', 'currentOwnerDisplayName']">
+    <tr *ngFor="let ap of accessProfilesToShow | filter:searchText:['name', 'shortDescription', 'currentOwnerAccountName', 'currentOwnerDisplayName']">
       <td *ngIf="bulkAction">
         <input type="checkbox" [(ngModel)]="ap.selected" (click)="changeOnSelect($event)">
       </td>
       <td>{{ ap.name }}</td>
-      <td>{{ ap.description }}</td>
+      <td>{{ ap.shortDescription }}</td>
       <td>{{ ap.enabled }}</td>
       <td>{{ ap.entitlements }}</td>
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">

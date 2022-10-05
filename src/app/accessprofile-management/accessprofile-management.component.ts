@@ -10,6 +10,8 @@ import { AuthenticationService } from '../service/authentication-service.service
 import { SimpleQueryCondition } from '../model/simple-query-condition';
 import { SourceOwner } from '../model/source-owner';
 import { AccessProfile } from '../model/accessprofile';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const AccessProfileDescriptionMaxLength = 50;
 
@@ -34,6 +36,8 @@ export class AccessProfileManagementComponent implements OnInit {
   validToSubmit: boolean;
   errorMessage: string;
   deleteAccessProfileConfirmText: string;
+
+  zip: JSZip = new JSZip();
 
   public modalRef: BsModalRef;
   
@@ -88,17 +92,28 @@ export class AccessProfileManagementComponent implements OnInit {
               accessProfile.name = each.name;
               if (each.description) {
                 if (each.description.length > AccessProfileDescriptionMaxLength) {
-                  accessProfile.description = each.description.substring(0, AccessProfileDescriptionMaxLength) + "...";
+                  accessProfile.shortDescription = each.description.substring(0, AccessProfileDescriptionMaxLength) + "...";
                 }
                 else {
                   accessProfile.description = each.description;
+                  accessProfile.shortDescription = each.description;
                 }
               }
               accessProfile.id = each.id;
               accessProfile.enabled = each.enabled;
               
               accessProfile.entitlements = each.entitlements.length;
+
+              accessProfile.sourceName = each.source.name;
               
+              let entitlementList = [];
+
+              if(each.entitlements != null) {
+                for (let entitlement of each.entitlements) {
+                  entitlementList.push(entitlement.name);
+                }
+                accessProfile.entitlementList = entitlementList.join(";").toString();
+              }
               
               let query = new SimpleQueryCondition();
               query.attribute = "id";
@@ -241,7 +256,7 @@ export class AccessProfileManagementComponent implements OnInit {
       decimalseparator: '.',
       showLabels: true,
       useHeader: true,
-      headers: ["name", "description", "id", "enabled", "entitlements", "ownerAccountID", "ownerDisplayName"],
+      headers: ["name", "description", "id", "enabled", "entitlements", "sourceName", "entitlementList", "ownerAccountID", "ownerDisplayName"],
       nullToEmptyString: true,
     };
 
@@ -315,6 +330,32 @@ showdeleteAccessProfileConfirmModal() {
 
 async sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+exportAllAccessProfiles() {
+    
+  this.idnService.getAccessProfiles()
+        .subscribe(
+          results => {
+          this.accessProfiles = [];
+          for (let each of results) {
+            let accessProfile = new AccessProfile();
+            let jsonData = JSON.stringify(each, null, 4);
+            accessProfile.name = each.name;
+            let fileName = "AccessProfile - " + accessProfile.name + ".json";
+            this.zip.file(`${fileName}`, jsonData);
+            
+          }
+          const currentUser = this.authenticationService.currentUserValue;
+          let zipFileName = `${currentUser.tenant}-accessprofiles.zip`;
+
+         this.zip.generateAsync({type:"blob"}).then(function(content) {
+            saveAs(content, zipFileName);
+        });
+
+        this.ngOnInit();
+
+        });    
 }
 
 }

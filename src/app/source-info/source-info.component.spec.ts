@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { OrgTimeComponent } from './org-time-update.component';
+import { SourceInfoComponent } from './source-info.component';
 
-describe('OrgTimeComponent', () => {
-  let component: OrgTimeComponent;
-  let fixture: ComponentFixture<OrgTimeComponent>;
+describe('SourceInfoComponent', () => {
+  let component: SourceInfoComponent;
+  let fixture: ComponentFixture<SourceInfoComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OrgTimeComponent ]
+      declarations: [ SourceInfoComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OrgTimeComponent);
+    fixture = TestBed.createComponent(SourceInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

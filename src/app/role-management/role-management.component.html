@@ -15,12 +15,12 @@
         placeholder="Type Role Name, Description, Owner Account ID or Owner Display Name to filter the result.">
     </div>
     <div class="col-sm-1 text-right">
-      <button type="button" [disabled]="loading" (click)="ngOnInit()" class="btn btn-info btn-sm">
+      <button type="button" [disabled]="loading" (click)="ngOnInit()" class="btn btn-primary btn-sm">
         Refresh
       </button>
     </div>
     <div class="col-sm-2 text-right">
-      <button type="button" [disabled]="loading || !allOwnersFetched" (click)="showRoleRefreshSubmitConfirmModal()" class="btn btn-info btn-sm">
+      <button type="button" [disabled]="loading || !allOwnersFetched" (click)="showRoleRefreshSubmitConfirmModal()" class="btn btn-primary btn-sm">
         Refresh All Org Roles
       </button>
     </div>
@@ -32,7 +32,7 @@
   </div>
 </div>
 <div class="form-group row" *ngIf="!loading && allOwnersFetched">
-  <div class="col-sm-5">
+  <div class="col-sm-8">
     <ng-select [(ngModel)]="bulkAction" appearance="outline" placeholder="Select Bulk Role Action" 
       (change)="changeOnBulkAction($event)">
         <ng-option value="EnableRoles">Bulk Enable Roles</ng-option>
@@ -42,9 +42,14 @@
         <ng-option value="DeleteRoles">Bulk Delete Roles</ng-option>
     </ng-select>
   </div>
-  <div class="col-sm-7 text-right" *ngIf="roles">
-    <button type="button" (click)="saveInCsv()" class="btn btn-link">
-      Download
+  <div class="col-sm-2 text-right" *ngIf="roles">
+    <button type="button" [disabled]="loading" (click)="saveInCsv()" class="btn btn-primary btn-sm">
+      Download CSV
+    </button>
+  </div>
+  <div class="col-sm-2 text-right">
+    <button type="button" [disabled]="loading" (click)="exportAllRoles()" class="btn btn-primary btn-sm">
+      Export All
     </button>
   </div>
 </div>
@@ -53,7 +58,7 @@
     <span class="font-weight-bold">To enable roles, select the items and click the 'Submit to Enable' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Enable
     </button>
   </div>
@@ -63,7 +68,7 @@
     <span class="font-weight-bold">To disable roles, select the items and click the 'Submit to Disable' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Disable
     </button>
   </div>
@@ -73,7 +78,7 @@
     <span class="font-weight-bold">To make roles reqestable, select the items and click the 'Submit to Make Requestable' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Make Requestable
     </button>
   </div>
@@ -83,7 +88,7 @@
     <span class="font-weight-bold">To make roles non reqestable, select the items and click the 'Submit to Make Non Requestable' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Make Non Requestable
     </button>
   </div>
@@ -93,7 +98,7 @@
     <span class="font-weight-bold">To delete roles, select the items and click the 'Submit to Delete Roles' button.</span>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Delete Roles
     </button>
   </div>
@@ -112,21 +117,23 @@
       <th scope="col">Requestable</th>
       <th scope="col">Criteria Based</th>
       <th scope="col">Access Profiles Attached</th>
+      <th scope="col">Identity Count</th>
       <th scope="col">Owner Account ID</th>
       <th scope="col">Owner Display Name</th>
     </tr>
   </thead>
   <tbody *ngIf="rolesToShow">
-    <tr *ngFor="let r of rolesToShow | filter:searchText:['name', 'description', 'currentOwnerAccountName', 'currentOwnerDisplayName']">
+    <tr *ngFor="let r of rolesToShow | filter:searchText:['name', 'shortDescription', 'currentOwnerAccountName', 'currentOwnerDisplayName']">
       <td *ngIf="bulkAction">
         <input type="checkbox" [(ngModel)]="r.selected" (click)="changeOnSelect($event)">
       </td>
       <td>{{ r.name }}</td>
-      <td>{{ r.description }}</td>
+      <td>{{ r.shortDescription }}</td>
       <td>{{ r.enabled }}</td>
       <td>{{ r.requestable }}</td>
       <td>{{ r.criteria }}</td>
       <td>{{ r.accessProfiles }}</td>
+      <td>{{ r.identityCount }}</td>
       <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;">
         <span *ngIf="r.owner">
           {{ r.owner.accountName }}

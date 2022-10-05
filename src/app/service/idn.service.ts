@@ -10,6 +10,10 @@ import { AggTaskPollingStatus } from '../model/agg-task-polling-status';
 import { AuthenticationService } from '../service/authentication-service.service';
 import { Role } from '../model/role';
 import { AccessProfile } from '../model/accessprofile';
+import { PAT } from '../model/pat';
+import { IdentityProfile } from '../model/identity-profile';
+import { IdentityAttribute } from '../model/identity-attribute';
+import { Transform } from '../model/transform';
 
 @Injectable({
   providedIn: 'root'
@@ -102,7 +106,7 @@ export class IDNService {
 
   searchIdentities(identityId: string): Observable<any> {
     const currentUser = this.authenticationService.currentUserValue;
-    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/search/identities`;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/search/identities`;
 
     let payload = {
       "query": {
@@ -171,6 +175,15 @@ export class IDNService {
 
     return this.http.get(url, this.httpOptions).pipe(
       catchError(this.handleError(`getAllRoles`))
+    );
+  }
+
+  getRoleIdentityCount(role: Role): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/roles/${role.id}/assigned-identities?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'}).pipe(
+      catchError(this.handleError(`getRoleIdentityCount`))
     );
   }
 
@@ -355,7 +368,7 @@ export class IDNService {
 
   searchAccounts(query: SimpleQueryCondition): Observable<any> {
     const currentUser = this.authenticationService.currentUserValue;
-    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/search/`;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/search/`;
 
     let payload = {
       "query": {
@@ -505,6 +518,121 @@ export class IDNService {
     return this.http.get(url, this.httpOptions);
   }
 
+  getHostingData(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/tenant-data/hosting-data`;
+
+    return this.http.get(url, this.httpOptions);
+  }
+
+  getIdentityCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/search/identities?limit=1&count=true`;
+
+    let payload = {
+      "query": {
+          "query": `*`
+      }
+    };
+
+    return this.http.post(url, payload, {observe: 'response'});
+  }
+
+  getAccountCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/accounts?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getIdentityProfileCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/identity-profiles?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getSourceCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/sources?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getAccessProfileCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/access-profiles?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getRoleCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/roles?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getEntitlementCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/entitlements?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getTotalCampaignCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/campaigns?limit=1&count=true`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getActiveCampaignCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/campaigns?limit=1&count=true&filters=status eq "ACTIVE"`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getCompletedCampaignCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/campaigns?limit=1&count=true&filters=status eq "COMPLETED"`;
+
+    return this.http.get(url, {observe: 'response'});
+  }
+
+  getPasswordChangeCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/search?limit=1&count=true`;
+
+    let payload = {
+      "query": {
+          "query": "technicalName:PASSWORD_ACTION_CHANGE_PASSED AND created:[now-7d/d TO now]"
+      },
+      "indices": [
+          "events"
+      ]
+  };
+
+    return this.http.post(url, payload, {observe: 'response'});
+  }
+
+  getProvisioningActivityCount(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/search?limit=1&count=true`;
+
+    let payload = {
+      "query": {
+          "query": "technicalName:(\"ACCOUNT_CREATE_PASSED\" OR \"ACCOUNT_ENABLE_PASSED\" OR \"ACCOUNT_DISABLE_PASSED\" OR \"ENTITLEMENT_ADD_PASSED\" OR \"APP_REQUEST_PASSED\" OR \"PASSWORD_ACTION_CHANGE_PASSED\") AND created:[now-7d/d TO now]"
+      },
+      "indices": [
+          "events"
+      ]
+  };
+
+    return this.http.post(url, payload, {observe: 'response'});
+  }
+
   getValidTimeZones(): Observable<any> {
     const currentUser = this.authenticationService.currentUserValue;
     let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/org-config/valid-time-zones`;
@@ -532,6 +660,33 @@ export class IDNService {
 
     return this.http.patch(url, payload, myHttpOptions);
   }
+
+  listPAT(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/personal-access-tokens`;
+
+    return this.http.get(url, this.httpOptions);
+  }
+
+  deletePAT(pat: PAT): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/beta/personal-access-tokens/${pat.id}`;
+    
+    let myHttpOptions = {
+      headers: new HttpHeaders({
+      })
+    };
+    
+    return this.http.delete(url, myHttpOptions);
+  }
+
+  getUserByAlias(alias: string): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/cc/api/user/get?alias=${alias}`;
+
+    return this.http.get(url, this.httpOptions);
+  }
+
 
   exportCloudRules(): Observable<any> {
     const currentUser = this.authenticationService.currentUserValue;
@@ -566,6 +721,141 @@ export class IDNService {
     return this.http.get(url, this.httpOptions).pipe(
       catchError(this.handleError(`downloadSPConfigExport`))
     );
+  }
+
+  getIdentityProfiles(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/identity-profiles?sorters=priority`;
+
+    return this.http.get(url, this.httpOptions).pipe(
+      catchError(this.handleError(`getAllIdentityProfiles`))
+    );
+  }
+
+  refreshIdentityProfile(profileId: string): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/identity-profiles/${profileId}/refresh-identities`;
+
+    return this.http.post(url, this.httpOptions);
+  }
+
+  updateProfilePriority(profile: IdentityProfile): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/identity-profiles/${profile.id}`;
+    
+    let myHttpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json-patch+json'
+      })
+    };
+
+    let payload = [
+      {
+          "op": "replace",
+          "path": "/priority",
+          "value": `${profile.newPriority}`
+      }
+    ];
+
+    return this.http.patch(url, payload, myHttpOptions);
+  }
+
+  getIdentityProfilesv1(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/cc/api/profile/list?sorters=priority`;
+
+    return this.http.get(url, this.httpOptions).pipe(
+      catchError(this.handleError(`getAllIdentityProfilesv1`))
+    );
+  }
+
+  updateProfilePriorityv1(profile: IdentityProfile): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/cc/api/profile/update/${profile.id}`;
+
+    var formdata = new FormData();
+    formdata.append("priority", `${profile.newPriority}`);
+
+    return this.http.post(url, formdata);
+  }
+
+  refreshIdentityProfilev1(profileId: string): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/cc/api/profile/refresh/${profileId}`;
+
+    let myHttpOptions = {
+      headers: new HttpHeaders({
+      })
+    };
+
+    return this.http.post(url, null, myHttpOptions);
+  }
+
+  getIdentityAttributes(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/cc/api/identityAttribute/list`;
+
+    return this.http.get(url, this.httpOptions).pipe(
+      catchError(this.handleError(`getIdentityAttributes`))
+    );
+  }
+
+  updateAttributeIndex(attribute: IdentityAttribute): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/cc/api/identityAttribute/update?name=${attribute.name}`;
+
+
+    let payload = 
+      {
+        "displayName": attribute.displayName,
+        "name": attribute.name,
+        "searchable": attribute.searchable,
+        "sources": attribute.sources,
+        "type": attribute.type
+      };
+
+    return this.http.post(url, payload);
+  }
+
+  getAllTransforms(): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/transforms`;
+
+    return this.http.get(url, this.httpOptions).pipe(
+      catchError(this.handleError(`getAllTransforms`))
+    );
+  }
+
+  getTransformById(transformId: string): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/transforms/${transformId}`;
+
+    return this.http.get(url, this.httpOptions);
+  }
+
+  updateTransform(transform: Transform): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/transforms/${transform.id}`;
+    
+    let payload = transform;
+
+    return this.http.put(url, payload, this.httpOptions);
+  }
+
+  deleteTransform(transformId: string): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/transforms/${transformId}`;
+
+    return this.http.delete(url, this.httpOptions);
+  }
+
+  createTransform(transform: Transform): Observable<any> {
+    const currentUser = this.authenticationService.currentUserValue;
+    let url = `https://${currentUser.tenant}.api.${currentUser.domain}/v3/transforms/`;
+    
+    let payload = transform;
+
+    return this.http.post(url, payload, this.httpOptions);
   }
 
    /** Log a HeroService message with the MessageService */

@@ -12,10 +12,10 @@
         <div class="input-group-text bg-transparent border-right-0"><i class="fa fa-search"></i></div>
       </span>
       <input class="form-control py-2 border-left-0 border" type="text" name="search" [(ngModel)]="searchText" autocomplete="off" 
-        placeholder="Click Search button to fetch the data. Type Source Name, Description, cloudExternalID, Owner Account ID or Type to filter the result.">
+        placeholder="Type Source Name, Description, cloudExternalID, Owner Account ID or Type to filter the result.">
     </div>
     <div class="col-sm-2 text-right">
-      <button type="button" [disabled]="loading || !allOwnersFetched" (click)="ngOnInit()" class="btn btn-info btn-sm">
+      <button type="button" [disabled]="loading || !allOwnersFetched" (click)="ngOnInit()" class="btn btn-primary btn-sm">
         Refresh
       </button>
     </div>
@@ -27,16 +27,7 @@
   </div>
 </div>
 <div class="form-group row" *ngIf="!loading && allOwnersFetched">
-  <div class="col-sm-5">
-  </div>
-  <div class="col-sm-7 text-right" *ngIf="sources">
-    <button type="button" (click)="saveInCsv()" class="btn btn-link">
-      Download
-    </button>
-  </div>
-</div>
-<div class="form-group row" *ngIf="!loading && allOwnersFetched">
-  <div class="col-sm-12 text-left">
+  <div class="col-sm-10 text-left">
     <span class="font-weight-bold">To change the owner, select the items, enter the new owner account ID and click the 'Submit to Change' button. </span>
     <span class="font-weight-bold">To apply change in bulk:
       <br>
@@ -45,6 +36,11 @@
       &nbsp;&nbsp;&nbsp;&nbsp; 2) or select the items and then upload the saved csv file by clicking 'Choose file' button.
     </span>
   </div>
+  <div class="col-sm-2 text-right" *ngIf="sources">
+    <button type="button" (click)="saveInCsv()" class="btn btn-primary btn-sm">
+      Download
+    </button>
+  </div>
 </div>
 <div class="form-group row" *ngIf="!loading && allOwnersFetched">
   <div class="col-sm-3 text-left">
@@ -52,17 +48,17 @@
           placeholder="Enter Owner account ID">
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="applyNewOwnerToAllSelected()" class="btn btn-info btn-sm">
+    <button type="button" (click)="applyNewOwnerToAllSelected()" class="btn btn-primary btn-sm">
       Apply to Selected
     </button>
   </div>
   <div class="col-sm-5 text-left">
-    <input #fileInput type="file" accept=".csv" (change)="handleFileSelect($event)" class="btn btn-info btn-sm">
+    <input #fileInput type="file" accept=".csv" (change)="handleFileSelect($event)" class="btn btn-primary btn-sm">
     &nbsp;&nbsp;
-    <button (click)="clearFileSelect()" class="btn btn-info btn-sm">Clear file</button>
+    <button (click)="clearFileSelect()" class="btn btn-primary btn-sm">Clear file</button>
   </div>
   <div class="col-sm-2 text-right">
-    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-info btn-sm">
+    <button type="button" (click)="showSubmitConfirmModal()" class="btn btn-primary btn-sm">
       Submit to Change
     </button>
   </div>

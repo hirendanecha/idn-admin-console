@@ -10,6 +10,8 @@ import { AuthenticationService } from '../service/authentication-service.service
 import { Role } from '../model/role';
 import { SimpleQueryCondition } from '../model/simple-query-condition';
 import { SourceOwner } from '../model/source-owner';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const RoleDescriptionMaxLength = 50;
 
@@ -34,6 +36,8 @@ export class RoleManagementComponent implements OnInit {
   validToSubmit: boolean;
   errorMessage: string;
   deleteRoleConfirmText: string;
+
+  zip: JSZip = new JSZip();
 
   public modalRef: BsModalRef;
   
@@ -89,22 +93,48 @@ export class RoleManagementComponent implements OnInit {
               role.name = each.name;
               if (each.description) {
                 if (each.description.length > RoleDescriptionMaxLength) {
-                  role.description = each.description.substring(0, RoleDescriptionMaxLength) + "...";
+                  role.shortDescription = each.description.substring(0, RoleDescriptionMaxLength) + "...";
                 }
                 else {
                   role.description = each.description;
+                  role.shortDescription = each.description;
                 }
               }
               role.id = each.id;
               role.enabled = each.enabled;
               role.requestable = each.requestable;
+
+              let identityNames = [];
+
               if(each.membership && each.membership.criteria != null) {
+                role.criteriaDetail = JSON.stringify(each.membership.criteria);
                 role.criteria = true;
               } else {
                 role.criteria = false;
+                if(each.membership && each.membership.identities != null) {
+                  for (let identities of each.membership.identities) {
+                    identityNames.push(identities.name);
+                  }
+                  role.identityList = identityNames.join(";").toString();
+                }
               }
               
               role.accessProfiles = each.accessProfiles.length;
+
+              let accessProfileNames = [];
+
+              if (each.accessProfiles) {
+                 for (let accessprofile of each.accessProfiles) {
+                   accessProfileNames.push(accessprofile.name);
+                 }
+              }
+
+              role.accessProfilesNames = accessProfileNames.join(";").toString();
+
+              this.idnService.getRoleIdentityCount(each)
+              .subscribe( identityCount => {
+                role.identityCount = identityCount.headers.get('X-Total-Count');
+              })
               
               
               let query = new SimpleQueryCondition();
@@ -252,7 +282,7 @@ export class RoleManagementComponent implements OnInit {
       decimalseparator: '.',
       showLabels: true,
       useHeader: true,
-      headers: ["name", "description", "id", "enabled", "requestable", "criteria", "accessProfiles", "ownerAccountID", "ownerDisplayName"],
+      headers: ["name", "description", "id", "enabled", "requestable", "criteria", "criteriaDetail", "accessProfiles", "accessProfilesNames", "identityList", "ownerAccountID", "ownerDisplayName"],
       nullToEmptyString: true,
     };
 
@@ -355,6 +385,32 @@ showDeleteRoleConfirmModal() {
 
 async sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+exportAllRoles() {
+    
+  this.idnService.getRoles()
+        .subscribe(
+          results => {
+          this.roles = [];
+          for (let each of results) {
+            let role = new Role();
+            let jsonData = JSON.stringify(each, null, 4);
+            role.name = each.name;
+            let fileName = "Role - " + role.name + ".json";
+            this.zip.file(`${fileName}`, jsonData);
+            
+          }
+          const currentUser = this.authenticationService.currentUserValue;
+          let zipFileName = `${currentUser.tenant}-roles.zip`;
+
+         this.zip.generateAsync({type:"blob"}).then(function(content) {
+            saveAs(content, zipFileName);
+        });
+
+        this.ngOnInit();
+
+        });    
 }
 
 }
